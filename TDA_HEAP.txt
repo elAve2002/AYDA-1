@@ -1,0 +1,122 @@
+1)TDA Heap (Tipo de Dato Abstracto)
+a) Especifique algebraicamente el TDA Heap.
+
+como no especifica que si es MIN o MAX asumo que es MIN
+
+CLASS Heap [Elemento: ANY]
+IMPORT Nat
+BASIC CONSTRUCTORS inicHeap, crearHeap;
+EFFECTIVE
+TYPE Heap
+OPERATIONS
+    inicHeap: -> Heap;
+    crearHeap: Heap * Heap * Elemento -> Heap;
+    vacio: Heap -> Boolean;
+
+    getRaiz: Heap(H) -> Elemento // es el valor mas pequeño
+        PRE: not vacio(H);
+
+   	extractRaiz: Heap(H) -> Heap
+        PRE: not vacio(H);
+
+    subIzq: Heap -> Heap
+        PRE: not vacio(H);
+
+    subDer: Heap -> Heap
+        PRE: not vacio(H);
+
+    altura: Heap -> Nat;
+
+    mayor: Heap(H) -> Elemento
+        PRE: not vacio(H);
+
+    existeElemento: Heap * Elemento -> Boolean;
+
+    cantElementos: Heap -> Nat;
+
+AXIOMS  H, H1, H2: Heap; E, E1, E2: Elemento; N: Nat;
+    vacio(inicHeap()) = True;
+    vacio(crearHeap(H1,H2,E)) = False;
+
+    raiz(crearHeap(H1,H2,E)) = E;
+
+    subIzq(crearHeap(H1,H2,E)) = H1;
+    subDer(crearHeap(H1,H2,E)) = H2;
+
+    alturaHeap(inicHeap()) = 0;
+    alturaHeap(crearHeap(H1,H2,E)) = 1 + max(alturaHeap(H1), alturaHeap(H2));
+
+    mayor(inicHeap()) = E; // Solo para mantener la sintaxis correcta, pero nunca será llamado debido al PRE
+
+    mayor(crearHeap(inicHeap(), inicHeap(), E)) = E;
+    mayor(crearHeap(H1, inicHeap(), E)) = max(E, mayor(H1));
+    mayor(crearHeap(inicHeap(), H2, E)) = max(E, mayor(H2));
+    mayor(crearHeap(H1, H2, E)) = max(E, mayor(H1), mayor(H2));
+
+    existeElemento(inicHeap()) = False;
+    (E == E1) => existeElemento(crearHeap(H1,H2,E), E1) = True;
+    (E != E1) => existeElemento(crearHeap(H1,H2,E), E1) = existeElemento(H1, E1) or existeElemento(H2, E1);
+
+    cantElementos(inicHeap()) = 0;
+    cantElementos(inicHeap(crearHeap(H1,H2,E))) = 1 + cantElementos(H1) + cantElementos(H2);
+
+    extractRaiz(crearHeap(inicHeap(), inicHeap(), E)) = inicHeap(); 
+    (H1 != inicHeap()) => extractRaiz(crearHeap(H1, H2, E)) = crearHeap(reestructurar(subIzq(H1), subDer(H2)), subIzq(H2), subDer(H2));
+
+
+END-CLASS;
+
+b) Seleccione una estructura de datos apropiada para el Heap que permita insertar y eliminar elementos en O(log n).
+
+Para un heap que permita inserciones y eliminaciones en 𝑂(log 𝑛), la estructura de datos más apropiada es el heap binario (también conocido como árbol binario de montículo).
+
+c) Justifique. Implemente en C++ el header de la clase Heap.
+
+template <typename T>
+class Heap
+{
+    public:
+        Heap();
+        virtual ~Heap();
+
+        crearHeap(Heap<T> H1,Heap<T> H2, T elem);
+        
+        bool vacio() const;
+        T raiz() const;
+        
+        Heap<T> subIzquierdo() const;
+        Heap<T> subDerecho() const;
+        
+        unsigned int altura() const;
+        T mayor() const;
+        
+        bool existeElemento(T Elem) const;
+        
+        unsigned int cantElementos() const;
+        
+        
+    private:
+    	void reestructurar();
+        T Elemento;
+        Heap<T>* izq;
+        Heap<T>* der;
+};
+
+
+d) Implemente el método de ordenamiento Heapsort en C++
+
+Heap Arbol;
+
+// cargar valores arbol...
+
+int n = Arbol.cantElementos();
+vector<T> arrASC (n);
+
+for (int i = 0; i < n; i++){
+	arr[i] = Arbol.getRaiz();	//extraemos el valor mas pequeño (la raiz)
+	Arbol.extractRaiz();		//eliminamos la raiz
+}
+
+e) ¿En qué técnica de diseño de algoritmos se basa el Heapsort? Justifique
+
+
